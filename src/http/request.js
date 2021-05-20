@@ -23,7 +23,7 @@ const httpInstance = axios.create({
 httpInstance.interceptors.request.use(
   (config) => {
     //do something
-    console.log(config);
+    //console.log(config);
     return config
   },
   (error) => {
@@ -32,15 +32,13 @@ httpInstance.interceptors.request.use(
 )
 
 httpInstance.interceptors.response.use(res => {
-  console.log(res.status);
+  //console.log(res.status);
   if (typeof res.data !== 'object') {
-    console.log(res.url);
     Toast.fail('服务端异常！')
     return Promise.reject(res)
   }
   if (res.status != 200) {
     Toast.fail('服务端返回异常状态！')
-    console.log(res);
     return Promise.reject(res.data)
   }
   return res.data

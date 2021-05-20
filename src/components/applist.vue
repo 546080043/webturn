@@ -7,21 +7,20 @@
     <ul class="listbox">
       <li class="listbox_li border1-1" v-for="(item,listseq) in datalist" :key="listseq">
           <div class="listbox_li_div1">{{listseq+1}}</div>
-          <div class="listbox_li_div2"><img class="listbox_li_img" :src="item['im:image'][2].label"/></div>
+          <div class="listbox_li_div2"><img class="listbox_li_img" :src="item.artworkUrl100"/></div>
           <div class="listbox_li_div3">
-            <div>{{item['im:name'].label}}</div>
-            <div>{{item.category.attributes.label}}</div>
-            <div>
-              <template v-for="index of stararr[listseq%10]" :key="index">
+            <div>{{item.trackCensoredName}}</div>
+            <div>{{item.genres[0]}}</div>
+            <div v-if="showRating">
+              <template v-for="index of starcount(listseq)" :key="index">
                 <i class="fa fa-star star-oval" aria-hidden="true" ></i>
               </template>
-              <i class="fa fa-star-half-o star-oval" aria-hidden="true" v-if="starhalfarr[listseq%10]"></i> 
-              <template v-for="index of (5-stararr[listseq%10]-starhalfarr[listseq%10])" :key="index">
+              <i v-if="halfstarcount(listseq)" class="fa fa-star-half-o star-oval" aria-hidden="true" ></i> 
+              <template v-for="index of ovalstarstarcount(listseq)" :key="index">
                 <i class="fa fa-star-o star-oval" aria-hidden="true"></i> 
               </template>
-              <span>({{commentsarr[listseq%10]}})</span>
+              <span>({{item.userRatingCount}})</span>
             </div>
-
           </div>
       </li>
     </ul>
@@ -32,15 +31,31 @@
 export default {
   data() {
     return {
-      stararr: [2,4,5,3,4,3,3,4,2,4],
-      starhalfarr: [0,1,0,0,1,0,1,0,1,0],
-      commentsarr:[1127,985,0,23,99,560,16,0,30,3]
+      
     }
   },
   props: {
-    datalist: String,
+    datalist: Array,
+    showRating: Boolean,
   },
-};
+  computed: {
+      starcount() {
+          return function(index){
+              return Math.trunc(this.datalist[index].averageUserRating)     
+          }           
+      },
+      halfstarcount() {
+          return function(index){
+              return this.datalist[index].averageUserRating>this.starcount(index)?true:false     
+          }           
+      },
+      ovalstarstarcount() {
+          return function(index){
+              return 5-this.starcount(index)-this.halfstarcount(index)   
+          }           
+      } 
+    }
+  }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
@@ -56,6 +71,7 @@ export default {
     &>div>img{
       border-radius: pxToRem(30);
       width: $slideimgwidth;
+      height: $slideimgwidth;
       margin: 0 pxToRem(15);
     }
     &_div1{

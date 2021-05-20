@@ -33,7 +33,6 @@ export default {
       * @description: 搜索功能
       */
     triggersearch() {
-      console.log('triggersearch');
       this.$emit('searchdata',this.searchtext);
     }
   }

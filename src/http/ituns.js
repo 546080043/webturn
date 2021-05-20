@@ -23,22 +23,25 @@ let getRecommends = ()=>{
  * @description 搜索app
  */
  let searchApps1 = ()=>{
-    const url1 = '/search?term=携程旅行&country=cn&entity=softwar'
+    //const url1 = '/search?term=携程旅行&country=cn&entity=softwar'
     const url2 = '/search?term=travel&country=cn&entity=softwar'
     return httpInstance.get(url2)
 }
 
 let searchApps2 = ()=>{
     const url1 = '/search?term=jack+johnson&limit='+defaultAppCounts
-    const url2 = '/hk/search?term=jack+johnson&limit='+defaultAppCounts
+    //const url2 = '/hk/search?term=jack+johnson&limit='+defaultAppCounts
     return httpInstance.get(url1)
 }
 
 let lookup = (searchkey)=>{
-    const url1 = '/lookup?id=284910350'
-    const url2 = '/hk/lookup?id=284910350'
-    const url3 = '/hk/search?term='+searchkey+'&limit='+popularAppCounts
-    
-    return httpInstance.get(url3)
+    const url1 = '/hk/search?term='+searchkey+'&limit='+popularAppCounts
+    //const url2 = '/hk/lookup?term='+searchkey+'&limit='+popularAppCounts
+    return httpInstance.get(url1)
 }
-export {getRecommends,getPopulars,searchApps1,searchApps2,lookup}
+
+let lookupById = (ids)=>{
+    const url2 = '/hk/lookup?id='+ids
+    return httpInstance.get(url2)
+}
+export {getRecommends,getPopulars,searchApps1,searchApps2,lookup,lookupById}

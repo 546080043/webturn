@@ -12,10 +12,8 @@
     <div class="line1 border2-1" />
   </div>
   <div class="content">
-    <!--免费应用列表-->
-    <applist :datalist="datalist" />
-    <!--搜索结果列表-->
-    <searchlist :datalist="searchlist" />
+    <!--应用列表-->
+    <applist :datalist="datalist" :showRating="showRating" />
   </div>
 </template>
 
@@ -24,59 +22,62 @@
   import searchbar from "@/components/searchbar.vue";
   import appslide from "@/components/appslide.vue";
   import applist from "@/components/applist.vue";
-  import searchlist from "@/components/searchlist.vue";
   import {
     getRecommends,
     getPopulars,
     lookup,
+    lookupById
   } from "@/http/ituns.js";
 
   export default {
     data() {
       return {
         datalist: [],
-        searchlist: [],
         slidelist: [],
+        showRating: true
       };
     },
     components: {
       searchbar,
       applist,
-      searchlist,
       appslide,
     },
-    mounted() {
+    created() {
       let gthis = this;
       //获取推荐列表
       getRecommends()
         .then((res1) => {
-          //console.log(res1)
-          gthis.slidelist = res1.feed.entry;
-          console.log(gthis.slidelist);
+          gthis.slidelist = res1.feed.entry
           //获取免费应用列表
-          return getPopulars();
+          return getPopulars()
         })
         .then((res3) => {
-          // console.log(res3)
-          gthis.datalist = res3.feed.entry;
-          console.log(gthis.datalist);
-        });
+           let ids = res3.feed.entry.map((item)=>item.id.attributes["im:id"])
+           return lookupById(ids.join())
+        }).then((res4) => {
+          gthis.datalist = res4.results  
+        })
     },
     methods: {
       /**
         * @description: 搜索功能
         */
       searchdata(searchkey) {
-        let gthis = this;
-        if (!searchkey) return;
-        console.log("searchkey:" + searchkey);
-        gthis.datalist = [];
-        gthis.searchlist = [];
-        //搜索数据
-        lookup(searchkey).then((res5) => {
-          console.log(res5);
-          gthis.searchlist = res5.results;
-        });
+        let gthis = this
+        if (!searchkey) return
+        gthis.datalist = []
+        gthis.showRating = false
+    
+        lookup(searchkey)
+          .then((res5) => {
+            let procData = res5.results.map((item)=>{
+              item.trackCensoredName=item.trackName
+              item.genres=[item.primaryGenreName]
+              return item
+            })
+            gthis.datalist = procData  
+            // return lookupById(ids.join())
+          })
       },
     },
   };
